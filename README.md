@@ -25,6 +25,49 @@ Every answer is grounded in source material and cites the exact data source, she
 
 This project combines structured university data with document retrieval and LLM-based reasoning to create a reliable academic guidance assistant that works in both text and voice-friendly workflows.
 
+## Core RAG workflow reflected in the project
+
+The project follows the same conceptual flow shown in the class diagram/image for building a basic RAG application, but extends it with academic data validation, tool use, and grounding checks.
+
+1. Import required libraries
+   - Python packages for LangChain, FastAPI, vector search, PDF/Excel ingestion, and environment management
+
+2. Load the source documents
+   - Read the Student Handbook PDF, SOP PDF, and academic Excel files
+   - Parse curriculum, minor, and semester structure information
+
+3. Combine the data sources
+   - Merge structured academic facts with text/document knowledge into one retrieval pipeline
+
+4. Split the documents into chunks
+   - Break long PDF sections into smaller passages for better retrieval precision
+
+5. Convert text to embeddings
+   - Generate embeddings using Azure OpenAI or AWS Bedrock Titan embeddings
+
+6. Store the embeddings in a vector database
+   - Persist the embeddings and metadata in a retrieval-friendly knowledge base
+
+7. Create a retriever
+   - Combine BM25 lexical search and dense vector search using reciprocal rank fusion
+
+8. Choose the LLM
+   - Use Azure OpenAI chat models for reasoning and answer generation
+
+9. Create the prompt
+   - Use a system prompt that instructs the model to answer only from the provided academic sources and to ask for missing information when needed
+
+10. Ask a question
+   - Send a student query through the retrieval + reasoning flow
+
+11. Build the user interface
+   - Expose the app via FastAPI and the static web frontend
+
+12. Run the application
+   - Launch the advisor locally or through the deployed Vercel app
+
+This is the simplified RAG lifecycle that the project implements at a larger, more rigorous scale with academic validation, evidence checks, and deterministic tools.
+
 ## Assignment alignment and design goals
 
 This project is designed to match the requirements of the assignment described in [GenAI_Assignment.pdf](GenAI_Assignment.pdf). It is not just a document Q&A demo: it is structured to behave like an academic decision-support system that can:
