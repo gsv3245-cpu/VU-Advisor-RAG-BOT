@@ -25,6 +25,48 @@ Every answer is grounded in source material and cites the exact data source, she
 
 This project combines structured university data with document retrieval and LLM-based reasoning to create a reliable academic guidance assistant that works in both text and voice-friendly workflows.
 
+## Assignment alignment and design goals
+
+This project is designed to match the requirements of the assignment described in [GenAI_Assignment.pdf](GenAI_Assignment.pdf). It is not just a document Q&A demo: it is structured to behave like an academic decision-support system that can:
+
+- answer curriculum and policy questions using official university sources
+- recognize when the available information is insufficient
+- ask follow-up questions before making assumptions
+- use synthetic, anonymized student profiles instead of real personal data
+- detect conflicts and unsupported guidance
+- compare a baseline model with a grounded RAG + tool pipeline
+- evaluate reliability, correctness, and evidence quality using a predefined test set
+
+### Mapping to the assignment phases
+
+1. Build the advisor
+   - Ingests course, batch, credit, basket, and policy data from official sources
+   - Builds a retrieval layer over the curriculum and handbook content
+   - Uses a tool-calling LangGraph agent to combine retrieval and structured facts
+
+2. Challenge the advisor
+   - Includes synthetic student profiles in `eval/profiles.json`
+   - Evaluates edge cases such as missing information, insufficient prerequisites, conflicting policy interpretations, and unavailable courses
+
+3. Improve through prompt engineering
+   - Uses a structured prompt with role/context constraints and evidence checks
+   - Includes a tool-first pipeline rather than relying on a bare LLM answer
+   - Adds verification logic to strip unsupported citations and reduce hallucination
+
+4. Evaluate and measure
+   - Uses a predefined evaluation set in `eval/test_cases.json`
+   - Measures correctness, hallucination rate, eligibility decisions, evidence correctness, response time, and handling of missing/conflicting information
+
+5. Compare and analyze
+   - The README and code structure explicitly describe the progression from basic prompting to RAG and then to RAG + structured student data
+
+6. Deploy and demonstrate
+   - The project includes a live hosted app at https://vu-advisor.vercel.app/
+   - The FastAPI app exposes a chat interface and voice-input support
+
+7. Documentation and presentation
+   - This README captures the architecture, data flow, evaluation methodology, and project explanation in a form suitable for submission and presentation
+
 ## How the system works step by step
 
 The project follows a real RAG + tool-calling workflow, not just a simple chat prompt. The pipeline is organized as a series of stages that transform raw university data into a usable academic assistant.
@@ -171,6 +213,42 @@ That makes it more trustworthy for academic advising, especially in domains wher
 ### Environment and configuration
 - python-dotenv to load environment variables
 - `.env.example` contains the required Azure and AWS configuration for chat, embeddings, and transcription
+
+## Repository structure
+
+```text
+VU-advisor/
+├── advisor/                     # core application logic
+│   ├── ingest/                  # format-aware ingestion and build pipeline
+│   ├── static/                  # frontend UI assets
+│   ├── config.py                # environment and source paths
+│   ├── embeddings.py            # embedding provider abstraction
+│   ├── graph.py                 # LangGraph orchestration and verification
+│   ├── retrieval.py             # hybrid retrieval and ranking logic
+│   ├── server.py                # FastAPI API and chat routes
+│   ├── tools.py                 # deterministic academic tools
+│   └── prompts.py               # system prompt and assistant instructions
+├── eval/                        # evaluation test cases and synthetic profiles
+├── knowledge_base/              # generated knowledge data and retrieval artifacts
+├── assets/                      # branding and visual assets
+├── .env.example                 # environment template
+├── requirements.txt             # Python dependencies
+├── README.md                    # project documentation
+├── GenAI_Assignment.pdf          # assignment brief
+├── Semester_Spread_Structures_Sept_2026.xlsx
+├── MinorCoursesforBTech_Students.xlsx
+├── 4. Student Handbook Aug 2026.pdf
+├── SOP STUDENT 17082026 - Final.pdf
+└── ...
+```
+
+## Important limitations and assumptions
+
+- The project uses synthetic student profiles, not real student records, in line with the assignment requirement.
+- The system is grounded in the provided academic documents and spreadsheet data only; it does not invent answers beyond those sources.
+- Azure OpenAI credentials are required for full chat and transcription functionality. Without them, the application runs in preview mode and displays the retrieval evidence instead of generating a final answer.
+- The knowledge base must be rebuilt after source data changes so that SQLite tables and retrieval indexes stay in sync.
+- The project is designed for reliability and academic trustworthiness, which means it prefers asking clarifying questions or reporting insufficient information over guessing.
 
 ## Quick start
 
