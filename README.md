@@ -68,6 +68,21 @@ The project follows the same conceptual flow shown in the class diagram/image fo
 
 This is the simplified RAG lifecycle that the project implements at a larger, more rigorous scale with academic validation, evidence checks, and deterministic tools.
 
+### Beyond the basic image: additional project features
+
+Although the slide shows the core RAG flow, this project adds several important layers beyond a simple document Q&A system:
+
+- academic data validation before answering questions
+- synthesis of structured spreadsheet facts with unstructured policy text
+- tool-calling logic for semester planning, course details, prerequisites, minors, and eligibility checks
+- student-profile-aware answering using synthetic anonymized records
+- source-grounded verification to avoid unsupported recommendations
+- conflict and missing-information detection when the provided data is ambiguous or incomplete
+- evaluation against a test set measuring accuracy, hallucination rate, and response quality
+- deployment as a real web app with a user-friendly interface and voice input support
+
+These enhancements are what make the system suitable for an academic advisor rather than a generic chatbot.
+
 ## Assignment alignment and design goals
 
 This project is designed to match the requirements of the assignment described in [GenAI_Assignment.pdf](GenAI_Assignment.pdf). It is not just a document Q&A demo: it is structured to behave like an academic decision-support system that can:
