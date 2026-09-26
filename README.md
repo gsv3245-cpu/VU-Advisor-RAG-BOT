@@ -17,6 +17,153 @@ Every answer is grounded in source material and cites the exact data source, she
 
 This project combines structured university data with document retrieval and LLM-based reasoning to create a reliable academic guidance assistant that works in both text and voice-friendly workflows.
 
+## How the system works step by step
+
+The project follows a real RAG + tool-calling workflow, not just a simple chat prompt. The pipeline is organized as a series of stages that transform raw university data into a usable academic assistant.
+
+### 1. Source ingestion
+
+The project reads original source material from:
+- Excel files for semester spreads, structure details, and minors
+- PDF files for the Student Handbook and SOP documents
+
+These inputs are processed by the ingestion layer under `advisor/ingest/` using format-aware adapters. The build process converts each source into a common internal representation called `SourceUnit`, which keeps:
+- the source type (table or document section)
+- source metadata such as sheet name or page number
+- the extracted content itself
+
+This is important because the system is designed to preserve provenance: every answer can be traced back to a workbook cell, PDF page, or curated text section.
+
+### 2. Data normalization and validation
+
+Once the raw content is ingested, the build pipeline cleans and normalizes it into a structured SQLite database.
+
+The builder creates tables for:
+- course offerings by batch and semester
+- option lists for each course slot
+- basket and credit requirements
+- minors and minor credits
+- academic terms and calendar mapping
+- known policy and data inconsistencies as tracked issues
+
+The ingestion script validates the resulting dataset against rules such as:
+- every course slot is accounted for
+- course totals are consistent across batches
+- basket totals match the structure sheets
+- minors meet their specified credit totals
+- prerequisite relationships and calendar mappings remain coherent
+
+This validation stage is essential because the assistant is meant to answer academic questions with reliable, not speculative, information.
+
+### 3. Knowledge base generation
+
+After validation succeeds, the project builds a search-ready knowledge base under `knowledge_base/` containing:
+- a SQLite database with structured academic facts
+- curated markdown versions of the Student Handbook and SOP
+- chunked document text suitable for retrieval
+- embeddings and embedding metadata for semantic search
+- validation and provenance reports
+
+This is a hybrid knowledge layer: structured, exact facts are stored in SQLite, while unstructured policy text is chunked and indexed for semantic retrieval.
+
+### 4. Retrieval layer
+
+The retrieval system is implemented in `advisor/retrieval.py` and uses hybrid search.
+
+It combines:
+- BM25 lexical matching for exact keywords, course codes, and academic terminology
+- dense embedding-based semantic matching for paraphrased or concept-based queries
+- reciprocal rank fusion (RRF) to combine both retrieval strategies
+
+This matters because academic questions often mix exact codes like `MATH201` with natural-language wording like “which courses are needed before data structures?” The hybrid search handles both kinds of queries.
+
+### 5. Agent and decision logic
+
+The core reasoning engine lives in `advisor/graph.py` and uses LangGraph.
+
+The agent loop works like this:
+1. the user asks a question
+2. the system checks for relevant course mentions or profile context
+3. the agent decides whether tool calls are needed
+4. deterministic tools fetch structured academic facts from SQLite
+5. retrieval tools search policy documents and curated text
+6. the model produces an answer only from evidence that was actually returned by the tools
+7. the verification stage strips unsupported citations and checks for conflicts, missing data, or follow-up questions
+
+This architecture prevents the LLM from inventing facts outside the verified source set.
+
+### 6. Deterministic academic tools
+
+The project does not rely on the model to do all reasoning by itself. Instead, it exposes a set of structured Python tools in `advisor/tools.py` that answer common academic queries, including:
+- `lookup_courses`: find courses by batch, semester, bucket, credits, or other filters
+- `course_details`: fetch detailed information for a specific course code or title
+- `semester_plan`: show the course plan for a given batch and semester
+- `credit_structure`: explain basket-wise credit requirements
+- `minor_info`: retrieve minor programmes and requirements
+- `prerequisite_chain`: show prerequisite dependencies
+- `academic_calendar`: map batch and semester to academic time periods
+- `check_eligibility`: decide if a student can take a course based on batch, prerequisites, CGPA, and completed courses
+- `search_documents`: retrieve policy or curriculum passages from the curated corpus
+- `list_data_issues`: surface known inconsistencies or warnings
+- `run_sql`: safely query the SQLite database with read-only SQL
+
+These tools are what make the assistant academically grounded instead of simply conversational.
+
+### 7. Web and voice interface
+
+The FastAPI app in `advisor/server.py` exposes:
+- a REST API for chat requests
+- audio transcription for voice-based input
+- preview mode when Azure config is missing
+- a frontend interface served from `advisor/static/`
+
+The app also supports synthetic student profiles for evaluation and testing, which lets the assistant answer personalized eligibility questions without exposing real student data.
+
+### 8. Why this architecture is effective
+
+This project combines exact facts and generative reasoning in a controlled way:
+- exact facts stay in SQLite and are validated before use
+- policy documents and guidance are stored in a retrieval layer
+- a tool-calling LLM answers using those sources
+- source citations are enforced in the verification stage
+- the system can say “not enough information” instead of guessing
+
+That makes it more trustworthy for academic advising, especially in domains where errors can have real consequences.
+
+## Technology stack
+
+### Core backend
+- Python 3.x
+- FastAPI for the web API
+- Uvicorn as the ASGI server
+- LangGraph for orchestration of the reasoning workflow
+- LangChain Core / LangChain OpenAI for model integration
+- Azure OpenAI for chat, embeddings, and speech transcription
+- AWS Bedrock Titan embeddings as an alternative embedding backend
+
+### Data and knowledge layer
+- SQLite for the structured academic database
+- OpenPyXL for Excel parsing
+- PyMuPDF-based PDF extraction and text cleanup
+- Pandas and NumPy for data handling and vector operations
+- BM25 (rank-bm25) for lexical retrieval
+- dense vector embeddings for semantic retrieval
+- JSONL chunk storage for knowledge retrieval documents
+
+### Frontend and UX
+- static HTML/CSS/JS UI located in `advisor/static/`
+- assets for branding and supporting visuals
+- optional voice transcription flow through Azure speech services
+
+### Validation and testing
+- pytest for automated checks
+- custom validation logic during the ingestion/build process
+- evaluation scripts under `eval/` that benchmark factual, policy, eligibility, conflict, and missing-information questions
+
+### Environment and configuration
+- python-dotenv to load environment variables
+- `.env.example` contains the required Azure and AWS configuration for chat, embeddings, and transcription
+
 ## Quick start
 
 ```bash
