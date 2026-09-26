@@ -2,6 +2,14 @@
 
 Author: Ganga Sagar Verma
 
+## Live demo
+
+Open the deployed application here:
+
+https://vu-advisor.vercel.app/
+
+This is the hosted version of the VU AI Academic Advisor chatbot for quick access and testing.
+
 ## Project overview
 
 This project is a retrieval-augmented academic advisor built for Vidyashilp University’s B.Tech (Data Science) programme. It helps students and advisors answer curriculum-related questions using official academic data, university policy documents, and structured course records instead of guesswork.
