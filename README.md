@@ -1,4 +1,4 @@
-# VU AI Academic Advisor (DATA308)
+# VU AI Academic Advisor
 
 Author: Ganga Sagar Verma
 
