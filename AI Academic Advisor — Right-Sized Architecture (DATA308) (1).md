@@ -97,7 +97,7 @@ Worked example, matching the assignment's own sample dialogue: *"Can I take Mach
 | Lexical index | rank\_bm25 | Pure Python, in-memory, no server; catches exact course codes/numbers embeddings sometimes blur. |
 | Fusion | Hand-written RRF (\~10 lines) | No library needed at this scale. |
 | Structured store | pandas DataFrames, or SQLite for SQL | Zero setup; eligibility/credit logic runs as plain code, not LLM reasoning — this is what keeps hallucination near zero on factual questions. |
-| LLM | Whatever API you already use (Claude/GPT), low temperature | Grounding + insufficiency instructions live in the system prompt; low temperature reduces improvisation. |
+| LLM | Any compatible LLM API you already use, low temperature | Grounding + insufficiency instructions live in the system prompt; low temperature reduces improvisation. |
 | Reranker | Skip by default; keep as one ablation experiment | Report it as tested-but-not-required — feeds Phase 3's "compare prompting/retrieval variants" credit. |
 | UI | Streamlit | "Dashboard kind of chatbot": a chat pane plus a sidebar showing retrieved sources, a confidence indicator and a student-profile selector — a day's build, and directly satisfies Phase 6 ("seamless, clear interaction," "source/evidence presentation"). |
 

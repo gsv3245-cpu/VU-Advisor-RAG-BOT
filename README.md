@@ -1,9 +1,21 @@
 # VU AI Academic Advisor (DATA308)
 
-A grounded academic advisor for Vidyashilp University's B.Tech (DS) programme, batches 2022–2026. It answers exact
-curriculum questions (by batch, semester, month, credits, L-T-P, prerequisites, baskets, minors) and policy questions
-(Student Handbook, SOP). Every answer cites the exact sheet cell or handbook page. It asks follow-up questions when
-information is missing and flags conflicting sources. You can type or speak.
+Author: Ganga Sagar Verma
+
+## Project overview
+
+This project is a retrieval-augmented academic advisor built for Vidyashilp University’s B.Tech (Data Science) programme. It helps students and advisors answer curriculum-related questions using official academic data, university policy documents, and structured course records instead of guesswork.
+
+The system is designed to answer questions about:
+- semester-wise course plans and batch progression
+- credits, L-T-P structure, prerequisites, electives, and baskets
+- minor requirements and eligibility
+- academic calendar and policy rules from the Student Handbook and SOP
+- conflicts or missing information when the source data is unclear or inconsistent
+
+Every answer is grounded in source material and cites the exact data source, sheet cell, or handbook page. The assistant can ask follow-up questions when details are incomplete and can flag conflicting information.
+
+This project combines structured university data with document retrieval and LLM-based reasoning to create a reliable academic guidance assistant that works in both text and voice-friendly workflows.
 
 ## Quick start
 
